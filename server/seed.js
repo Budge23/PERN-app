@@ -2,6 +2,7 @@
 // const app = express()
 // const cors = require('cors')
 const pool = require('./db')
+const bcrypt = require('bcryptjs')
 
 // app.listen(5000, () => {
 //   console.log('server has started on port 5000')
@@ -21,12 +22,16 @@ async function seed(){
     last_login DATE
   )`)
 
-  const user1 = ['Theo', 'pass', 'theo@theo.com']
+  const password = 'pass'
+  const salt = bcrypt.genSaltSync()
+  const hash = bcrypt.hashSync(password, salt)
+
+  const user1 = ['Theo', hash, 'theo@theo.com']
 
   await pool.query('INSERT INTO users (username, password, email, date_created) VALUES($1, $2, $3, NOW())', user1
   )
   
-  const user2 = ['Lee', 'pass', 'lee@lee.com']
+  const user2 = ['Lee', hash, 'lee@lee.com']
 
   await pool.query('INSERT INTO users (username, password, email, date_created) VALUES($1, $2, $3, NOW())', user2
   )

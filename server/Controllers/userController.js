@@ -1,20 +1,24 @@
 const pool = require('../db')
 const bcrypt = require('bcryptjs')
+require('dotenv').config()
 
 const jwt = require('jsonwebtoken')
-const secret = 'This is our secret'
+const secret = process.env.SECRET
+
+console.log(secret)
 
 async function createUser(req, res) {
   try {
-    const {
-      username,
-      password
+    const { 
+      username, 
+      email, 
+      password 
     } = req.body
     const salt = bcrypt.genSaltSync()
     const hash = bcrypt.hashSync(password, salt)
     const newUser = await pool.query(
-      'INSERT INTO users (username, password) VALUES($1, $2) RETURNING username, password',
-      [username, hash]
+      'INSERT INTO users (username, email, password, date_created) VALUES($1, $2, $3, NOW()) RETURNING username, password',
+      [username, email, hash]
     )
     res.json(newUser.rows[0])
   } catch (err) {
@@ -35,6 +39,12 @@ async function loginUser(req, res) {
     )
     const test = await bcrypt.compare(password, user.rows[0].password)
     console.log(test)
+
+    if (!test) {
+      return res.send({ message: 'Incorrect email/password' })
+    }
+    console.log(['secret', secret])
+
     const token = jwt.sign({
       sub: user.rows[0].id
     },
@@ -46,6 +56,10 @@ async function loginUser(req, res) {
       user: user.rows[0].username,
       token: token
     }
+    
+    await pool.query('UPDATE users SET last_login=NOW() WHERE username=($1)',
+      [username])
+
     res.json(response)
   } catch (err) {
     console.error(err.message)
