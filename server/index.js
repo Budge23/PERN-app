@@ -27,13 +27,21 @@ app.post('/users', async (req, res) => {
     res.json(newUser.rows[0])
   } catch (err) {
     console.error(err.message)
+    res.json(err.message)
   }
 })
 
 
 app.post('/login', async (req, res) => {
   try {
-    
+    const { username, password } = req.body
+    const user = await pool.query(
+      'SELECT * FROM users WHERE username=($1)',
+      [username]
+    )
+    const test = await bcrypt.compare(password, user.rows[0].password)
+    console.log(test)
+    res.json(user.rows[0].password)
   } catch (err) {
     console.error(err.message)
   }
