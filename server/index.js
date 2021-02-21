@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const pool = require('./db')
+const bcrypt = require('bcryptjs')
 
 
 // middelware
@@ -17,9 +18,11 @@ app.use((req, res, next) => {
 app.post('/users', async (req, res) => {
   try {
     const { username, password } = req.body
+    const salt = bcrypt.genSaltSync()
+    const hash = bcrypt.hashSync(password, salt)
     const newUser = await pool.query(
       'INSERT INTO users (username, password) VALUES($1, $2) RETURNING username, password',
-      [username, password]
+      [username, hash]
     )
     res.json(newUser.rows[0])
   } catch (err) {
