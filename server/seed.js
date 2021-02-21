@@ -14,7 +14,7 @@ async function seed(){
   await pool.query(`CREATE TABLE users(
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(30) UNIQUE,
-    password VARCHAR(30),
+    password VARCHAR(225),
     email VARCHAR(225),
     email_verified BOOLEAN,
     date_created DATE,
@@ -41,8 +41,3 @@ seed()
 //   }
 //   console.log('Closed the database connection.')
 // })
-
-// const values = ['test', 'pass', 'test@test.com']
-
-// pool.query('INSERT INTO users (username, password, email, date_created) VALUES($1, $2, $3, NOW())', values
-// )
