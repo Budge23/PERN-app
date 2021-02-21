@@ -31,6 +31,14 @@ app.post('/users', async (req, res) => {
 })
 
 
+app.post('/login', async (req, res) => {
+  try {
+    
+  } catch (err) {
+    console.error(err.message)
+  }
+})
+
 
 app.listen(5000, () => {
   console.log('server has started on port 5000')
