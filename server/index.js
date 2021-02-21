@@ -1,51 +1,22 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const pool = require('./db')
-const bcrypt = require('bcryptjs')
+const Router = require('./router')
+
 
 
 // middelware
 app.use(cors())
 app.use(express.json())
 
+app.use('/api', Router)
+
 app.use((req, res, next) => {
   console.log(`Incoming request, ${req.method} to ${req.url}`)
   next()
 })
 
-// Routes
-app.post('/users', async (req, res) => {
-  try {
-    const { username, password } = req.body
-    const salt = bcrypt.genSaltSync()
-    const hash = bcrypt.hashSync(password, salt)
-    const newUser = await pool.query(
-      'INSERT INTO users (username, password) VALUES($1, $2) RETURNING username, password',
-      [username, hash]
-    )
-    res.json(newUser.rows[0])
-  } catch (err) {
-    console.error(err.message)
-    res.json(err.message)
-  }
-})
 
-
-app.post('/login', async (req, res) => {
-  try {
-    const { username, password } = req.body
-    const user = await pool.query(
-      'SELECT * FROM users WHERE username=($1)',
-      [username]
-    )
-    const test = await bcrypt.compare(password, user.rows[0].password)
-    console.log(test)
-    res.json(user.rows[0].password)
-  } catch (err) {
-    console.error(err.message)
-  }
-})
 
 
 app.listen(5000, () => {
