@@ -37,10 +37,10 @@ async function loginUser(req, res) {
       'SELECT * FROM users WHERE username=($1)',
       [username]
     )
-    const test = await bcrypt.compare(password, user.rows[0].password)
+    const passwordComp = await bcrypt.compare(password, user.rows[0].password)
     console.log(test)
 
-    if (!test) {
+    if (!passwordComp) {
       return res.send({ message: 'Incorrect email/password' })
     }
     console.log(['secret', secret])

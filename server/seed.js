@@ -10,7 +10,10 @@ const bcrypt = require('bcryptjs')
 
 async function seed(){
 
-  await pool.query('DROP TABLE USERS')
+  await pool.query('DROP TABLE IF EXISTS calTracker')
+  await pool.query('DROP TABLE IF EXISTS users')
+
+ 
   
   await pool.query(`CREATE TABLE users(
     user_id SERIAL PRIMARY KEY,
@@ -35,6 +38,25 @@ async function seed(){
 
   await pool.query('INSERT INTO users (username, password, email, date_created) VALUES($1, $2, $3, NOW())', user2
   )
+
+  await pool.query(`CREATE TABLE calTracker(
+    cal_id SERIAL PRIMARY KEY,
+    week integer,
+    day_1 integer,
+    day_2 integer,
+    day_3 integer,
+    day_4 integer,
+    day_5 integer,
+    day_6 integer,
+    day_7 integer,
+    weekly_target integer,
+    user_id integer, 
+    constraint fk_user_id
+      foreign key (user_id)
+      REFERENCES users (user_id)
+  )`)
+
+
   pool.end()
 }
 
