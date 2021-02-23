@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs')
 require('dotenv').config()
 
 const jwt = require('jsonwebtoken')
-const secret = process.env.SECRET
+const secret = 'test'
 
 console.log(secret)
 
@@ -37,8 +37,9 @@ async function loginUser(req, res) {
       'SELECT * FROM users WHERE username=($1)',
       [username]
     )
+
+    console.log(user.rows[0].user_id)
     const passwordComp = await bcrypt.compare(password, user.rows[0].password)
-    console.log(test)
 
     if (!passwordComp) {
       return res.send({ message: 'Incorrect email/password' })
@@ -46,7 +47,7 @@ async function loginUser(req, res) {
     console.log(['secret', secret])
 
     const token = jwt.sign({
-      sub: user.rows[0].id
+      sub: user.rows[0].user_id
     },
     secret, {
       expiresIn: '12h'

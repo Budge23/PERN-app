@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const pool = require('../db')
-const secret = process.env.SECRET
+const secret = 'test'
 
 async function secureRoute(req, res, next){
   const authToken = req.headers.authorization
@@ -18,6 +18,7 @@ async function secureRoute(req, res, next){
     if (err) return res.status(401).send({
       message: 'Unauthorized Outdated'
     })
+    console.log(payload.sub)
 
     return payload.sub
   })
@@ -26,6 +27,7 @@ async function secureRoute(req, res, next){
       'SELECT user_id, username, email FROM users WHERE user_id=($1)',
       [userId]
     )
+
     req.currentUser = user.rows[0]
     next()
   } catch (err) {
@@ -33,3 +35,5 @@ async function secureRoute(req, res, next){
   }
   
 }
+
+module.exports = secureRoute

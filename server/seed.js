@@ -49,7 +49,7 @@ async function seed(){
     day_5 integer,
     day_6 integer,
     day_7 integer,
-    weekly_target integer,
+    daily_target integer,
     user_id integer, 
     constraint fk_user_id
       foreign key (user_id)
